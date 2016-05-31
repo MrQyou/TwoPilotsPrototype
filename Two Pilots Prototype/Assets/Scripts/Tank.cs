@@ -11,16 +11,17 @@ public class Tank : MonoBehaviour {
     public float dodgeDuration;
     public float dodgeSpeed;
     public bool iFrames;
+    public float rushSpeed;
     public GameObject body;
     public GameObject turret;
     public GameObject shield;
     public Text lifesText;
     public Image energyBar;
-    public Image shieldIcon;
     public Image damageScreen;
     public Material tankMaterial;
     public Ability[] abilities = new Ability[4];
 
+    float currentSpeed;
     float energyCurrent;
     bool invincible = false;
     bool dodging = false;
@@ -30,6 +31,7 @@ public class Tank : MonoBehaviour {
 
     void Start ()
     {
+        currentSpeed = speed;
         rb = this.GetComponent<Rigidbody>();
         lifesText.text = "Lifes: " + lifes;
         damageScreen.enabled = false;
@@ -39,15 +41,6 @@ public class Tank : MonoBehaviour {
     void Update()
     {
         energyBar.transform.localScale = new Vector3(energyCurrent / energyMax, 1, 1);
-
-        if(energyCurrent >= shieldCost)
-        {
-            shieldIcon.transform.localScale = Vector3.one;
-        }
-        else
-        {
-            shieldIcon.transform.localScale = Vector3.zero;
-        }
 
         if (Input.GetKeyDown("e"))
         {
@@ -68,6 +61,12 @@ public class Tank : MonoBehaviour {
                 tankMaterial.color = new Color(0.17f, 0.51f, 0.27f, 0.5f);
             }
         }
+
+        if (Input.GetKeyDown("c")) { currentSpeed = rushSpeed; }
+        if (Input.GetKeyUp("c")){ currentSpeed = speed; }
+
+        if (Input.GetKeyDown("v")) { invincible = true; currentSpeed = 0; }
+        if (Input.GetKeyUp("v")) { invincible = false; currentSpeed = speed; }
     }
 
 	void FixedUpdate ()
@@ -91,7 +90,7 @@ public class Tank : MonoBehaviour {
 
 	void Move(Vector3 movement)
 	{
-        rb.velocity = movement.normalized * speed;
+        rb.velocity = movement.normalized * currentSpeed;
 	}
 
     void OnTriggerEnter(Collider other)

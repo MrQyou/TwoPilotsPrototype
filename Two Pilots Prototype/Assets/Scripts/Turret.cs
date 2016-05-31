@@ -13,14 +13,8 @@ public class Turret : MonoBehaviour
     public Transform fireHole;
     public GameObject tank;
     public Image fireEnergyBar;
-    public Image abilityBar1;
-    public Image abilityBar2;
-    public Image abilityBar3;
-    public Image abilityBar4;
-    public Text chargeCounter1;
-    public Text chargeCounter2;
-    public Text chargeCounter3;
-    public Text chargeCounter4;
+    public Image[] abilityBars = new Image[4];
+    public Text[] chargeCounters = new Text[4];
     public Image[] icons = new Image[4];
 
     Ability[] abilities = new Ability[] { new AbilityBoomerang(), new AbilityBoomerang(), new AbilityBoomerang(), new AbilityBoomerang()};
@@ -116,18 +110,18 @@ public class Turret : MonoBehaviour
 
     void UpdateChargeCounters()
     {
-        chargeCounter1.text = abilities[0].currentCharges + "/" + abilities[0].maxCharges;
-        chargeCounter2.text = abilities[1].currentCharges + "/" + abilities[1].maxCharges;
-        chargeCounter3.text = abilities[2].currentCharges + "/" + abilities[2].maxCharges;
-        chargeCounter4.text = abilities[3].currentCharges + "/" + abilities[3].maxCharges;
+        for(int i = 0; i < chargeCounters.Length; i++)
+        {
+            chargeCounters[i].text = abilities[i].currentCharges + "/" + abilities[i].maxCharges;
+        }
     }
 
     void UpdateAbilityBars()
     {
-        abilityBar1.transform.localScale = new Vector3((float)abilities[0].currentCooldown / (float)abilities[0].maxCooldown, 1, 1);
-        abilityBar2.transform.localScale = new Vector3((float)abilities[1].currentCooldown / (float)abilities[1].maxCooldown, 1, 1);
-        abilityBar3.transform.localScale = new Vector3((float)abilities[2].currentCooldown / (float)abilities[2].maxCooldown, 1, 1);
-        abilityBar4.transform.localScale = new Vector3((float)abilities[3].currentCooldown / (float)abilities[3].maxCooldown, 1, 1);
+        for(int i = 0; i < abilityBars.Length; i++)
+        {
+            abilityBars[i].transform.localScale = new Vector3((float)abilities[i].currentCooldown / (float)abilities[i].maxCooldown, 1, 1);
+        }
     }
 
     void SetIcons()

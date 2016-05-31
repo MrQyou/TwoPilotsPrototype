@@ -6,11 +6,14 @@ public class Shield : MonoBehaviour
     public float growthSpeed = 0.01f;
     public float lifeTime;
 
+    GameObject player;
+
     float startTime;
 
     void Start()
     {
         startTime = Time.time;
+        player = GameObject.FindGameObjectWithTag("Player");
     }
 
     void FixedUpdate()
@@ -27,7 +30,8 @@ public class Shield : MonoBehaviour
     {
         if(other.tag == "Bullet")
         {
-            Destroy(other.gameObject);
+            //Destroy(other.gameObject);
+            other.transform.rotation = player.transform.rotation;
         }
     }
 }
