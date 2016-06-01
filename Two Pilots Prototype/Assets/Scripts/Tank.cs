@@ -15,11 +15,13 @@ public class Tank : MonoBehaviour {
     public GameObject body;
     public GameObject turret;
     public GameObject shield;
+    public GameObject blockShield;
     public Text lifesText;
     public Image energyBar;
     public Image damageScreen;
     public Material tankMaterial;
     public Ability[] abilities = new Ability[4];
+    public Color invincibilityColor;
 
     float currentSpeed;
     float energyCurrent;
@@ -28,6 +30,7 @@ public class Tank : MonoBehaviour {
     float dodgeStart;
     Vector3 movement;
     Rigidbody rb;
+    Color tankColor;
 
     void Start ()
     {
@@ -35,7 +38,9 @@ public class Tank : MonoBehaviour {
         rb = this.GetComponent<Rigidbody>();
         lifesText.text = "Lifes: " + lifes;
         damageScreen.enabled = false;
+        tankColor = tankMaterial.color;
         StopInvinvibility();
+        blockShield.SetActive(false);
     }
 
     void Update()
@@ -58,15 +63,14 @@ public class Tank : MonoBehaviour {
             if (iFrames)
             {
                 Invincibility(dodgeDuration);
-                tankMaterial.color = new Color(0.17f, 0.51f, 0.27f, 0.5f);
             }
         }
 
         if (Input.GetKeyDown("c")) { currentSpeed = rushSpeed; }
         if (Input.GetKeyUp("c")){ currentSpeed = speed; }
 
-        if (Input.GetKeyDown("v")) { invincible = true; currentSpeed = 0; }
-        if (Input.GetKeyUp("v")) { invincible = false; currentSpeed = speed; }
+        if (Input.GetKeyDown("v")) { invincible = true; currentSpeed = 0; blockShield.SetActive(true); }
+        if (Input.GetKeyUp("v")) { invincible = false; currentSpeed = speed; blockShield.SetActive(false); }
     }
 
 	void FixedUpdate ()
@@ -100,7 +104,6 @@ public class Tank : MonoBehaviour {
             lifes -= 1;
             lifesText.text = "Lifes: " + lifes;
             BlinkDamageScreen();
-            tankMaterial.color = new Color(0.17f, 0.51f, 0.27f, 0.5f);
             Invincibility(1f);
             Destroy(other.gameObject);
         }
@@ -114,7 +117,6 @@ public class Tank : MonoBehaviour {
             lifes -= 1;
             lifesText.text = "Lifes: " + lifes;
             BlinkDamageScreen();
-            tankMaterial.color = new Color(0.17f, 0.51f, 0.27f, 0.5f);
             Invincibility(1f);
         }
     }
@@ -122,13 +124,14 @@ public class Tank : MonoBehaviour {
     void Invincibility(float duration)
     {
         invincible = true;
+        tankMaterial.color = invincibilityColor;
         Invoke("StopInvinvibility", duration);
     }
 
     void StopInvinvibility()
     {
         invincible = false;
-        tankMaterial.color = new Color(0.17f, 0.51f, 0.27f, 1f);
+        tankMaterial.color = tankColor;
     }
 
     public void AddEnergy(int energyAdded)
