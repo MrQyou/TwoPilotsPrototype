@@ -4,9 +4,9 @@ using System.Collections;
 public class EnemyMovementChaser : MonoBehaviour
 {
     public float speed;
+    public float changeTime = 2;
 
     Vector3 shift;
-    float changeTime = 2;
     float nextChange;
     float distance;
     GameObject player;

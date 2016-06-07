@@ -22,7 +22,9 @@ public class Tank : MonoBehaviour {
     public Material tankMaterial;
     public Ability[] abilities = new Ability[4];
     public Color invincibilityColor;
+    public Text comboText;
 
+    int comboCounter = 0;
     float currentSpeed;
     float energyCurrent;
     bool invincible = false;
@@ -41,6 +43,7 @@ public class Tank : MonoBehaviour {
         tankColor = tankMaterial.color;
         StopInvinvibility();
         blockShield.SetActive(false);
+        UpdateComboText();
     }
 
     void Update()
@@ -69,8 +72,8 @@ public class Tank : MonoBehaviour {
         if (Input.GetKeyDown("c")) { currentSpeed = rushSpeed; }
         if (Input.GetKeyUp("c")){ currentSpeed = speed; }
 
-        if (Input.GetKeyDown("v")) { invincible = true; currentSpeed = 0; blockShield.SetActive(true); }
-        if (Input.GetKeyUp("v")) { invincible = false; currentSpeed = speed; blockShield.SetActive(false); }
+        if (Input.GetKeyDown("v")) { currentSpeed = 0; blockShield.SetActive(true); }
+        if (Input.GetKeyUp("v")) { currentSpeed = speed; blockShield.SetActive(false); }
     }
 
 	void FixedUpdate ()
@@ -101,23 +104,19 @@ public class Tank : MonoBehaviour {
     {
         if (other.tag == "Bullet" && invincible == false)
         {
-            lifes -= 1;
-            lifesText.text = "Lifes: " + lifes;
-            BlinkDamageScreen();
-            Invincibility(1f);
+            TakeDamage(1);
             Destroy(other.gameObject);
         }
         else if (other.tag == "PickUp")
         {
-            turret.GetComponent<Turret>().ReduceCooldowns(1);
+            comboCounter++;
+            UpdateComboText();
+            turret.GetComponent<Turret>().ReduceCooldowns(comboCounter);
             Destroy(other.gameObject);
         }
         else if(other.tag == "Enemy" && invincible == false)
         {
-            lifes -= 1;
-            lifesText.text = "Lifes: " + lifes;
-            BlinkDamageScreen();
-            Invincibility(1f);
+            TakeDamage(1);
         }
     }
 
@@ -160,5 +159,20 @@ public class Tank : MonoBehaviour {
     void HideDamageScreen()
     {
         damageScreen.enabled = false;
+    }
+
+    void TakeDamage(int damage)
+    {
+        lifes -= damage;
+        lifesText.text = "Lifes: " + lifes;
+        BlinkDamageScreen();
+        Invincibility(1f);
+        comboCounter = 0;
+        UpdateComboText();
+    }
+
+    void UpdateComboText()
+    {
+        comboText.text = "Combo: " + comboCounter;
     }
 }
