@@ -17,7 +17,6 @@ public class AbilityBoomerang : Ability
 
     protected override void Execute(Transform trans)
     {
-        boomerang = MonoBehaviour.Instantiate(Resources.Load("Missle", typeof(GameObject)) as GameObject);
         MonoBehaviour.Instantiate(boomerang, trans.position, trans.rotation);
     }
 }

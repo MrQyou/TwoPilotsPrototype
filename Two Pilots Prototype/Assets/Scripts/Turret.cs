@@ -68,7 +68,6 @@ public class Turret : MonoBehaviour
                 shooting = false;
             }
         }
-
         else
         {
             RegenerateEnergy();

@@ -6,6 +6,7 @@ public class Tank : MonoBehaviour {
 
     public int lifes = 5;
 	public float speed = 1f;
+    public float comboTimeMax;
     public float energyMax;
     public float shieldCost;
     public float dodgeDuration;
@@ -22,9 +23,13 @@ public class Tank : MonoBehaviour {
     public Material tankMaterial;
     public Ability[] abilities = new Ability[4];
     public Color invincibilityColor;
-    public Text comboText;
+    public Text comboTextMover;
+    public Text comboTextShooter;
+    public Image comboBarShooter;
 
-    int comboCounter = 0;
+    int comboCounterMover = 0;
+    int comboCounterShooter = 0;
+    float comboTimeCurrent = 0;
     float currentSpeed;
     float energyCurrent;
     bool invincible = false;
@@ -43,7 +48,8 @@ public class Tank : MonoBehaviour {
         tankColor = tankMaterial.color;
         StopInvinvibility();
         blockShield.SetActive(false);
-        UpdateComboText();
+        UpdateComboTextMover();
+        UpdateComboTextShooter();
     }
 
     void Update()
@@ -74,6 +80,8 @@ public class Tank : MonoBehaviour {
 
         if (Input.GetKeyDown("v")) { currentSpeed = 0; blockShield.SetActive(true); }
         if (Input.GetKeyUp("v")) { currentSpeed = speed; blockShield.SetActive(false); }
+
+        ReduceComboTime();
     }
 
 	void FixedUpdate ()
@@ -109,9 +117,9 @@ public class Tank : MonoBehaviour {
         }
         else if (other.tag == "PickUp")
         {
-            comboCounter++;
-            UpdateComboText();
-            turret.GetComponent<Turret>().ReduceCooldowns(comboCounter);
+            comboCounterMover++;
+            UpdateComboTextMover();
+            turret.GetComponent<Turret>().ReduceCooldowns(comboCounterMover);
             Destroy(other.gameObject);
         }
         else if(other.tag == "Enemy" && invincible == false)
@@ -133,10 +141,18 @@ public class Tank : MonoBehaviour {
         tankMaterial.color = tankColor;
     }
 
-    public void AddEnergy(int energyAdded)
+    void AddEnergy(int energyAdded)
     {
         energyCurrent += energyAdded;
         energyCurrent = Mathf.Clamp(energyCurrent, 0, energyMax);
+    }
+
+    public void AddShooterCombo()
+    {
+        comboCounterShooter++;
+        comboTimeCurrent = comboTimeMax;
+        AddEnergy(comboCounterShooter);
+        UpdateComboTextShooter();
     }
 
     void Dodge()
@@ -167,12 +183,34 @@ public class Tank : MonoBehaviour {
         lifesText.text = "Lifes: " + lifes;
         BlinkDamageScreen();
         Invincibility(1f);
-        comboCounter = 0;
-        UpdateComboText();
+        comboCounterMover = 0;
+        UpdateComboTextMover();
     }
 
-    void UpdateComboText()
+    void UpdateComboTextMover()
     {
-        comboText.text = "Combo: " + comboCounter;
+        comboTextMover.text = "Combo: " + comboCounterMover;
+    }
+
+    void UpdateComboTextShooter()
+    {
+        comboTextShooter.text = "Combo: " + comboCounterShooter;
+    }
+
+    void ReduceComboTime()
+    {
+        if(comboCounterShooter > 0)
+        {
+            comboTimeCurrent -= Time.deltaTime;
+
+            if(comboTimeCurrent <= 0)
+            {
+                comboCounterShooter--;
+                comboTimeCurrent = comboTimeMax;
+                UpdateComboTextShooter();
+            }
+            comboTimeCurrent = Mathf.Clamp(comboTimeCurrent, 0, comboTimeMax);
+            comboBarShooter.transform.localScale = new Vector3(comboTimeCurrent / comboTimeMax, 1, 1);
+        }
     }
 }
