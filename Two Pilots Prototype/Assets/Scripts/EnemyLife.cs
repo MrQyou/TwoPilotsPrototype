@@ -7,6 +7,7 @@ public class EnemyLife : MonoBehaviour
     //public int energyValue;
     public int dropsMin;
     public int dropsMax;
+    public bool destroyParent = true;
 
     GameObject pickUp;
     GameObject player;
@@ -49,6 +50,13 @@ public class EnemyLife : MonoBehaviour
             Instantiate(pickUp, transform.position, Quaternion.Euler(Vector3.zero));
         }
 
-        Destroy(gameObject.transform.parent.gameObject);
+        if(destroyParent)
+        {
+            Destroy(gameObject.transform.parent.gameObject);
+        }
+        else
+        {
+            Destroy(this.gameObject);            
+        }
     }
 }
